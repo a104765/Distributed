@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="distributedAssignmentModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ProfilePreference">
+    <Key>
+      <PropertyRef Name="preference_id" />
+    </Key>
+    <Property Name="preference_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="Boolean" />
+    <Property Name="email" Type="Boolean" />
+    <Property Name="birthday" Type="Boolean" />
+    <Property Name="gender" Type="Boolean" />
+  </EntityType>
+  <EntityContainer Name="distributedAssignmentEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ProfilePreferences" EntityType="Self.ProfilePreference" />
+  </EntityContainer>
+</Schema>

@@ -11,6 +11,7 @@ using System.Web.Http;
 
 namespace API.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/facebook")]
     public class FacebookController : ApiController
     {
@@ -30,10 +31,10 @@ namespace API.Controllers
             client.endpoint = facebookEndpoint.getByNameEndpoint();
             string response = client.makeRequest();
 
-            JsonParser<FacebookProfileModel> JsonParser = new JsonParser<FacebookProfileModel>();
+            JSONParser<FacebookProfileModel> JSONParser = new JSONParser<FacebookProfileModel>();
 
             FacebookProfileModel deserialisedfacebookmodel = new FacebookProfileModel();
-            deserialisedfacebookmodel = JsonParser.parseJSON(response, JSONParser.Version.NETCore2);
+            deserialisedfacebookmodel = JSONParser.parseJson(response);
 
             FacebookProfileModel profile = deserialisedfacebookmodel;
 
@@ -49,10 +50,10 @@ namespace API.Controllers
             client.endpoint = facebookEndpoint.getByFeedEndpoint();
             string response = client.makeRequest();
 
-            JsonParser<FacebookFeedModel> JsonParser = new JsonParser<FacebookFeedModel>();
+            JSONParser<FacebookFeedModel> JsonParser = new JSONParser<FacebookFeedModel>();
 
             FacebookFeedModel deserialisedfacebookmodel = new FacebookFeedModel();
-            deserialisedfacebookmodel = JsonParser.parseJSON(response, JSONParser.Version.NETCore2);
+            deserialisedfacebookmodel = JsonParser.parseJson(response);
 
             List<FacebookFeedModel.FeedData> feeddata = new List<FacebookFeedModel.FeedData>();
 
@@ -64,22 +65,22 @@ namespace API.Controllers
             return feeddata;
         }
         [Route("getToken")]
-        public List<FacebookTokenModel> getToken(string accesstoken)
+        public FacebookTokenModel getToken(string accesstoken)
         {
-            List<FacebookTokenModel> fbPost = new List<FacebookTokenModel>();
+            FacebookTokenModel fbToken = new FacebookTokenModel();
             this.facebookEndpoint = new facebookEndpoint(accesstoken);
 
             client.endpoint = facebookEndpoint.getAccountEndpoint();
             string response = client.makeRequest();
 
-            JsonParser<FacebookTokenModel> JsonParser = new JsonParser<FacebookTokenModel>();
+            JSONParser<FacebookTokenModel> JSONParser = new JSONParser<FacebookTokenModel>();
 
             FacebookTokenModel deserialisedfacebookmodel = new FacebookTokenModel();
-            deserialisedfacebookmodel = JsonParser.parseJSON(response, JSONParser.Version.NETCore2);
+            deserialisedfacebookmodel = JSONParser.parseJson(response);
 
-            fbPost.Add(deserialisedfacebookmodel);
+            fbToken = deserialisedfacebookmodel;
 
-            return fbPost;
+            return fbToken;
 
         }
 
@@ -98,9 +99,9 @@ namespace API.Controllers
             this.facebookEndpoint = new facebookEndpoint(accesstoken);
             client.endpoint = facebookEndpoint.getByLikeEndpoint();
             string response = client.makeRequest();
-            JsonParser<FacebookLikesModel> JsonParser = new JsonParser<FacebookLikesModel>();
+            JSONParser<FacebookLikesModel> JsonParser = new JSONParser<FacebookLikesModel>();
             FacebookLikesModel deserialisedfacebookmodel = new FacebookLikesModel();
-            deserialisedfacebookmodel = JsonParser.parseJSON(response, JSONParser.Version.NETCore2);
+            deserialisedfacebookmodel = JsonParser.parseJson(response);
             List<FacebookLikesModel.LikeData> likedata = new List<FacebookLikesModel.LikeData>();
             foreach (FacebookLikesModel.LikeData likes in deserialisedfacebookmodel.data)
             {
@@ -111,20 +112,22 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("PostComment")]
-        public IHttpActionResult postComment(string id, string msg, string token)
+        public IHttpActionResult postComment(string id, string message, string token)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            client.endpoint = facebookEndpoint.postComment(id, msg, token);
+            this.facebookEndpoint = new facebookEndpoint(token);
+            client.endpoint = facebookEndpoint.postComment(id, message);
+            client.httpMethod = httpVerb.POST;
             string response = client.makeRequest();
 
             return Ok();
         }
 
-        public void Pref(ProfilePreference fbPref)
+        public void SetPref(ProfilePreference fbPref)
         {
             ApplicationDbContext db = new ApplicationDbContext();
             var user = db.Users.FirstOrDefault(x => x.UserName == fbPref.Username);
@@ -145,10 +148,20 @@ namespace API.Controllers
         }
 
 
+        [Route("GetPref")]
+        public ProfilePreference GetPref(string username)
+        {
+            ApplicationDbContext db = new ApplicationDbContext();
+            ProfilePreference pref = db.ProfilePrefereces.FirstOrDefault(x => x.Username == username);
+
+            return pref;
+        }
+
+
         [Route("SetPref")]
         public IHttpActionResult PostPref([FromBody] ProfilePreference pref)
         {
-            Pref(pref);
+            SetPref(pref);
 
             return Ok();
         }

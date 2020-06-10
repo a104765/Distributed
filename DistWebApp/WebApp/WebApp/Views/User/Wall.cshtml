@@ -6,7 +6,11 @@
                      onlogin="checkLoginState();">
     </fb:login-button>
 
-    <input id="btnnn" type="button" value="Get posts" />
+    <a id="twitter-button" onclick="signin()" class="btn btn-block btn-social btn-twitter">
+        <i class="fa fa-twitter"></i> Twitter Sign in
+    </a>
+
+    
 
 <div class="container-fluid">
     <div class="row">
@@ -17,6 +21,7 @@
             <div class="leftside">
                 <div class="row">
                     <h3>Facebook</h3>
+                    <input id="btnnn" type="button" value="Get posts" />
                 </div>
                 <p>
                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Profile</button>
@@ -30,12 +35,12 @@
 
                             <input id="prefSet" type="button" value="Set preferences" />
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" checked id="prefEmail">
-                                <label class="form-check-label" for="exampleCheck1">Email</label>
+                                <input type="checkbox" class="form-check-input" id="prefEmail">
+                                <label class="form-check-label" for="prefEmail">Email</label>
                             </div>
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" checked id="prefBirthday">
-                                <label class="form-check-label" for="exampleCheck1">Birthday</label>
+                                <input type="checkbox" class="form-check-input" id="prefBirthday">
+                                <label class="form-check-label" for="prefBirthday">Birthday</label>
                             </div>
 
                             <div class="card card-body">
@@ -70,6 +75,11 @@
             <div class="rightside">
                 <div class="row">
                     <h3>Twitter</h3>
+                    <input id="getTwitter" onclick="getHomeTweets()" type="button" value="Get Tweets" />
+
+                    <div id="Tweets">
+
+                    </div>
                 </div>
             </div>
         </div>

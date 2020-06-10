@@ -29,7 +29,6 @@ function statusChangeCallback(response) {
 
         var facebookToken = response.authResponse.accessToken;
         sessionStorage.setItem("fbToken", facebookToken);
-        console.log(facebookToken);
     }
 }
 
@@ -39,8 +38,45 @@ function logOut() {
     });
 }
 
-$(document).ready(function () {
+$(document).on("click", ".postbtn", function () {
 
+
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getToken?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+
+            sessionStorage.setItem("token", response["data"][0].access_token);
+        },
+        error: function (e) {
+            alert(e);
+        }
+    });
+
+    console.log($(this).attr("id"));
+
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/PostComment?id=' + $(this).attr("id") + '&message=' + $(this).siblings("input").val() + '&token=' + sessionStorage.getItem("token"),
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        contentType: 'application/json',
+        success: function (response) {
+            alert("Comment Posted");
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+});
+
+$(document).ready(function () {
 
     $('#linkClose').click(function () {
         $('#divError').hide('fade');
@@ -61,7 +97,7 @@ $(document).ready(function () {
                 sessionStorage.setItem('accessToken', response.access_token);
                 sessionStorage.setItem('username', $('#txtUsername').val());
                 window.location.href = "Wall";
-                //alert("OK");
+
             },
             error: function (jqXHR) {
                 $('#divErrorText').text(jqXHR.responseText);
@@ -71,7 +107,6 @@ $(document).ready(function () {
     });
 
     $(document).ready(function () {
-        console.log(sessionStorage.getItem('accessToken'));
 
         $('#linkClose').click(function () {
             $('#divError').hide('fade');
@@ -98,8 +133,7 @@ $(document).ready(function () {
     });
 
 
-
-    $(document).on("click", "#prefEmail", function () {
+    $(document).on("change", "#prefEmail", function () {
         var checkBox = document.getElementById("prefEmail");
         var text = document.getElementById("profileEmail");
 
@@ -110,7 +144,7 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("click", "#prefBirthday", function () {
+    $(document).on("change", "#prefBirthday", function () {
         var checkBox = document.getElementById("prefBirthday");
         var text = document.getElementById("profileBirthday");
 
@@ -158,13 +192,48 @@ $(document).ready(function () {
             },
             data: sessionStorage.getItem("fbToken"),
             success: function (data) {
-                //console.log(data);
+
                 $("#profileName").append(data.name);
                 $("#profileEmail").append(data.email);
                 $("#profileBirthday").append(data.birthday);
             },
             error: function (e) {
                 console.log("error " + e);
+            }
+        });
+
+        $.ajax({
+            url: 'https://localhost:44377/api/facebook/getPref?',
+            method: 'GET',
+            contentType: 'application/json',
+            data: {
+                username: sessionStorage.getItem("username")
+            },
+            headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+            },
+            success: function (response) {
+
+                console.log(response.Email);
+
+                if (response.Email == true) {
+                    $("#prefEmail").prop("checked", true);
+                }
+                else {
+                    $("#profileEmail").hide();
+                }
+
+                if (response.Birthday == true) {
+                    $("#prefBirthday").prop("checked", true);
+                }
+                else {
+                    $("#profileBirthday").hide();
+                }
+
+
+            },
+            error: function (e) {
+                alert(e);
             }
         });
 
@@ -177,7 +246,7 @@ $(document).ready(function () {
             data: sessionStorage.getItem("fbToken"),
             success: function (data) {
                 $.each(data, function (index, likes) {
-                    //console.log(likes.name);
+
                     $("#feed").append('<div class="card bg-light">');
                     $("#likes").append('<div class="card-body">');
                     $("#likes").append('<h5 class="card-title">' + likes.name + '</h5>');
@@ -196,10 +265,8 @@ $(document).ready(function () {
             },
             dataType: 'json',
             success: function (data) {
-                //console.log(data);
+
                 $.each(data, function (index, feed) {
-                    //console.log(feed);
-                    //console.log(feed.created_time);
 
                     $("#feed").append('<div class="card bg-light">');
                     $("#feed").append('<div class="card-body">');
@@ -222,30 +289,122 @@ $(document).ready(function () {
             },
             dataType: 'json',
             success: function (data) {
-                //console.log(JSON.parse(data));
                 var postsObject = JSON.parse(data);
-                var count = 1;
-                $.each(postsObject, function (index, data) {
-                    $.each(data, function (index, d) {
-                        console.log(d.message);
-                        if (d.message != null) {
+
+                for (x in postsObject.data) {
+                    if (postsObject.data[x].message != null) {
                             $("#page").append('<div class="card bg-light">');
                             $("#page").append('<div class="card-body">');
-                            $("#page").append('<h5 class="card-title">' + d.message + '</h5>');
-                            $("#page").append('<input type="text" class="form-control" id="cmtBox' + count + '" placeholder="Enter comment here...">');
-                            $("#page").append('<button type="button" id="cmtBtn'+ count +'" class="btn btn-primary">Submit</button>');
+                            $("#page").append('<h5 class="card-title">' + postsObject.data[x].message + '</h5>');
+                            $("#page").append('<input type="text">');
+                            $("#page").append('<button class="postbtn" id="' + postsObject.data[x].id+'"> Post </button>"');
                             $("#page").append('</div>');
                             $("#page").append('</div>');
                         }
-                        count = count + 1;
-                        
-                        
-                    });
-                });
+                }
             },
             error: function (e) {
                 console.log("error " + e);
             }
         });
+
+        
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBGRmFUoOk4txccNOpkLUi4LrNY8z2hFqM",
+    authDomain: "distributed-fe5c5.firebaseapp.com",
+    databaseURL: "https://distributed-fe5c5.firebaseio.com",
+    projectId: "distributed-fe5c5",
+    storageBucket: "distributed-fe5c5.appspot.com",
+    messagingSenderId: "362555904502",
+    appId: "1:362555904502:web:f0dd7706acec7a2b30b7d7",
+    measurementId: "G-DZM818RT7B"
+  };
+  // Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+
+
+function signin() {
+    var provider = new firebase.auth.TwitterAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function (result) {
+        
+        console.log(result);
+        var token = result.credential.accessToken;
+        sessionStorage.setItem("TwitterToken", token);
+        console.log(token);
+        var secret = result.credential.secret;
+        sessionStorage.setItem("TwitterSecret", secret);
+        console.log(secret);
+        // The signed-in user info.
+        var user = result.user;
+        console.log(user);
+        // ...
+    }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+    });
+
+
+    
+}
+
+function getHomeTweets() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/HomeTweets',
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret")
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            let output = '<h3>Home Tweets</h3>';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i]}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('Tweets').innerHTML = output;
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}

@@ -60,13 +60,13 @@ namespace API.Endpoints
             return stringBuilder.ToString();
         }
 
-        public string postComment(string id = "", string message = "", string access_token = "")
+        public string postComment(string id = "", string message = "")
         {
             StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
             stringBuilder.Append($"{id}/");
             stringBuilder.Append("comments?");
             stringBuilder.Append($"message={message}&");
-            stringBuilder.Append($"access_token={access_token}");
+            stringBuilder.Append($"access_token={accesstoken}");
             return stringBuilder.ToString();
         }
 

@@ -6,14 +6,12 @@ using System.Web;
 
 namespace API.Endpoints
 {
-    class facebookEndpoint : Endpoint
+    public class FacebookEndpoint 
     {
         public string accesstoken;
-        public facebookEndpoint(string accesstoken) : base(
-            "https://graph.facebook.com/")
-        {
-            this.accesstoken = accesstoken;
-        }
+
+        public string baseEndpoint = "https://graph.facebook.com/";
+        
 
         public string getByNameEndpoint()
         {
@@ -28,6 +26,15 @@ namespace API.Endpoints
         {
             StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
             stringBuilder.Append("v7.0/me/feed?");
+            stringBuilder.Append("access_token=");
+            stringBuilder.Append(accesstoken);
+            return stringBuilder.ToString();
+        }
+
+        public string getPicturesEndpoint()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("v7.0/me/photos?fields=name,picture&type=uploaded&");
             stringBuilder.Append("access_token=");
             stringBuilder.Append(accesstoken);
             return stringBuilder.ToString();
@@ -68,6 +75,15 @@ namespace API.Endpoints
             stringBuilder.Append($"message={message}&");
             stringBuilder.Append($"access_token={accesstoken}");
             return stringBuilder.ToString();
+        }
+
+
+        public Dictionary<string, string> getEndpoint()
+        {
+            return new Dictionary<string, string>
+            {
+                {"Authorization",accesstoken}
+            };
         }
 
     }

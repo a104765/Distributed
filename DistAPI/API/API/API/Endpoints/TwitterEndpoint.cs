@@ -6,18 +6,11 @@ using System.Web;
 
 namespace API.Endpoints
 {
-    class TwitterEndpoint : Endpoint
+    public class TwitterEndpoint
     {
-        public string accesstoken;
-        public string secretKey;
+        private const string baseEndpoint = "https://api.twitter.com/1.1/";
 
-        public TwitterEndpoint(string accesstoken, string secretKey) : base(
-            "https://api.twitter.com/1.1/"
-            )
-        {
-            this.accesstoken = accesstoken;
-            this.secretKey = secretKey;
-        }
+        
 
         public string getHomeTweets()
         {
@@ -25,8 +18,37 @@ namespace API.Endpoints
             stringBuilder.Append("statuses/home_timeline.json");
             return stringBuilder.ToString();
 
-
         }
+
+
+        public string getFavTweets()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("favorites/list.json");
+            return stringBuilder.ToString();
+        }
+        public string getTwitterFriends()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("friends/list.json");
+            return stringBuilder.ToString();
+        }
+        public string getTwitterFollowers()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("followers/list.json");
+            return stringBuilder.ToString();
+        }
+
+        public string makeTweet()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("statuses/update.json");
+            return stringBuilder.ToString();
+        }
+
+
+
 
         string a = "";
         public void AuthorizationSignature(string auth)
@@ -40,5 +62,6 @@ namespace API.Endpoints
                 {"Authorization",a}
             };
         }
+
     }
 }

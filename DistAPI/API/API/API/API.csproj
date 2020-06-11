@@ -245,7 +245,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TwitterController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="Endpoints\Endpoint.cs" />
     <Compile Include="Endpoints\facebookEndoint.cs" />
     <Compile Include="Endpoints\TwitterEndpoint.cs" />
     <Compile Include="Global.asax.cs">
@@ -257,10 +256,14 @@
     <Compile Include="Models\FacebookFeedModel.cs" />
     <Compile Include="Models\FacebookLikesModel.cs" />
     <Compile Include="Models\FacebookPagePosts.cs" />
+    <Compile Include="Models\FacebookPictureModel.cs" />
     <Compile Include="Models\FacebookProfileModel.cs" />
     <Compile Include="Models\FacebookTokenModel.cs" />
+    <Compile Include="Models\FavTweetModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ProfilePreference.cs" />
+    <Compile Include="Models\TwitterFollowerModel.cs" />
+    <Compile Include="Models\TwitterFriendModel.cs" />
     <Compile Include="Models\TwitterHomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />

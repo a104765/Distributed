@@ -256,6 +256,29 @@ $(document).ready(function () {
             }
         })
 
+
+        $.ajax({
+            url: 'https://localhost:44377/api/facebook/getPictures?accesstoken=' + sessionStorage.getItem("fbToken"),
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+            },
+            data: sessionStorage.getItem("fbToken"),
+            success: function (data) {
+                for (x in data) {
+
+                    console.log(data[x].name);
+                    console.log(data[x].picture);
+                    $("#pictures").append('<div class="card" style="width: 18rem;">');
+                    $("#pictures").append('<img src="'+ data[x].picture +'" class="card-img-top" alt="...">');
+                    $("#pictures").append('<div class="card-body">');
+                    $("#pictures").append('<p class="card-text">' + data[x].name + '</p >');
+                    $("#pictures").append('</div>');
+                    $("#pictures").append('</div>');
+                }
+            }
+        })
+
         $.ajax({
             url: 'https://localhost:44377/api/facebook/getFeed?accesstoken=' + sessionStorage.getItem("fbToken"),
             method: 'GET',
@@ -408,3 +431,132 @@ function getHomeTweets() {
         }
     });
 }
+
+
+
+
+function getFavTweets() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/FavTweets',
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret")
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            let output = '<h3>Fav Tweets</h3>';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i]}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('Tweets').innerHTML = output;
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}
+
+function getFriends() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/TwitterFriends',
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret")
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            let output = '<h3>Friends</h3>';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i].name}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('Tweets').innerHTML = output;
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}
+
+function getFollowers() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/TwitterFollowers',
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret")
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            let output = '<h3>Followers</h3>';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i].name}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('Tweets').innerHTML = output;
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}
+
+function postTweet() {
+    var accessToken = sessionStorage.getItem("TwitterToken");
+    var accessSecretToken = sessionStorage.getItem("TwitterSecret");
+    var tweet = document.getElementById('tweet').value;
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/PostTweet?access_token=' + accessToken + '&accessSecret_token=' + accessSecretToken + '&tweet=' + tweet,
+        method: 'POST',
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            alert("Nigga it works!");
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+            alert("Nigga we got a problem");
+        }
+    });
+}
+
+

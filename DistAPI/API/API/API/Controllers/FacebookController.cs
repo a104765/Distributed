@@ -15,21 +15,20 @@ namespace API.Controllers
     [RoutePrefix("api/facebook")]
     public class FacebookController : ApiController
     {
-        protected RestClient client;
-        private facebookEndpoint facebookEndpoint;
-
-        public FacebookController()
+        protected RestClient client = new RestClient();
+        private FacebookEndpoint facebookEndpoint;
+        public FacebookController(): base()
         {
-            this.client = new RestClient();
+            this.facebookEndpoint = new FacebookEndpoint();
         }
 
         [Route("getProfile")]
         public FacebookProfileModel getUserReading(string accesstoken)
         {
-            this.facebookEndpoint = new facebookEndpoint(accesstoken);
-
+            facebookEndpoint.accesstoken = accesstoken;
             client.endpoint = facebookEndpoint.getByNameEndpoint();
-            string response = client.makeRequest();
+            
+            string response = client.makeRequest(HttpVerb.GET,facebookEndpoint.getEndpoint());
 
             JSONParser<FacebookProfileModel> JSONParser = new JSONParser<FacebookProfileModel>();
 
@@ -45,10 +44,9 @@ namespace API.Controllers
         [Route("getFeed")]
         public List<FacebookFeedModel.FeedData> getUserFeed(string accesstoken)
         {
-            this.facebookEndpoint = new facebookEndpoint(accesstoken);
-
+            facebookEndpoint.accesstoken = accesstoken;
             client.endpoint = facebookEndpoint.getByFeedEndpoint();
-            string response = client.makeRequest();
+            string response = client.makeRequest(HttpVerb.GET, facebookEndpoint.getEndpoint());
 
             JSONParser<FacebookFeedModel> JsonParser = new JSONParser<FacebookFeedModel>();
 
@@ -64,14 +62,40 @@ namespace API.Controllers
 
             return feeddata;
         }
+
+        [Route("getPictures")]
+        public List<FacebookPictureModel.Picture> getPictures(string accesstoken)
+        {
+            facebookEndpoint.accesstoken = accesstoken;
+            client.endpoint = facebookEndpoint.getPicturesEndpoint();
+            string response = client.makeRequest(HttpVerb.GET, facebookEndpoint.getEndpoint());
+
+            JSONParser<FacebookPictureModel> JsonParser = new JSONParser<FacebookPictureModel>();
+
+            FacebookPictureModel deserialisedfacebookmodel = new FacebookPictureModel();
+            deserialisedfacebookmodel = JsonParser.parseJson(response);
+
+            List<FacebookPictureModel.Picture> picData = new List<FacebookPictureModel.Picture>();
+
+            foreach (FacebookPictureModel.Picture pic in deserialisedfacebookmodel.data)
+            {
+                picData.Add(pic);
+            }
+
+            return picData;
+        }
+
+
+
         [Route("getToken")]
         public FacebookTokenModel getToken(string accesstoken)
         {
             FacebookTokenModel fbToken = new FacebookTokenModel();
-            this.facebookEndpoint = new facebookEndpoint(accesstoken);
+
+            facebookEndpoint.accesstoken = accesstoken;
 
             client.endpoint = facebookEndpoint.getAccountEndpoint();
-            string response = client.makeRequest();
+            string response = client.makeRequest(HttpVerb.GET, facebookEndpoint.getEndpoint());
 
             JSONParser<FacebookTokenModel> JSONParser = new JSONParser<FacebookTokenModel>();
 
@@ -87,18 +111,18 @@ namespace API.Controllers
         [Route("getPagePosts")]
         public string getPagePosts(string accesstoken)
         {
-            this.facebookEndpoint = new facebookEndpoint(accesstoken);
+            facebookEndpoint.accesstoken = accesstoken;
             client.endpoint = facebookEndpoint.getPostsEndpoint();
-            string response = client.makeRequest();
-            
+            string response = client.makeRequest(HttpVerb.GET, facebookEndpoint.getEndpoint());
+
             return response;
         }
         [Route("getUserLikes")]
         public List<FacebookLikesModel.LikeData> getUserLikes(string accesstoken)
         {
-            this.facebookEndpoint = new facebookEndpoint(accesstoken);
+            facebookEndpoint.accesstoken = accesstoken;
             client.endpoint = facebookEndpoint.getByLikeEndpoint();
-            string response = client.makeRequest();
+            string response = client.makeRequest(HttpVerb.GET, facebookEndpoint.getEndpoint());
             JSONParser<FacebookLikesModel> JsonParser = new JSONParser<FacebookLikesModel>();
             FacebookLikesModel deserialisedfacebookmodel = new FacebookLikesModel();
             deserialisedfacebookmodel = JsonParser.parseJson(response);
@@ -119,10 +143,9 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
-            this.facebookEndpoint = new facebookEndpoint(token);
+            facebookEndpoint.accesstoken = token;
             client.endpoint = facebookEndpoint.postComment(id, message);
-            client.httpMethod = httpVerb.POST;
-            string response = client.makeRequest();
+            string response = client.makeRequest(HttpVerb.POST, facebookEndpoint.getEndpoint());
 
             return Ok();
         }

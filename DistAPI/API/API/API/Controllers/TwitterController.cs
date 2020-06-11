@@ -15,6 +15,8 @@ using API.Endpoints;
 using API.Client;
 using API.JSONParser;
 using API.Models;
+using static API.Models.TwitterFriendModel;
+using static API.Models.TwitterFollowerModel;
 
 namespace API.Controllers
 {
@@ -32,13 +34,13 @@ namespace API.Controllers
     public class TwitterController : ApiController
     {
 
-        protected RestClient restClient;
+        protected RestClient restClient = new RestClient();
 
-        private TwitterEndpoint twitterEndpoint;
+        protected TwitterEndpoint twitterEndpoint;
 
         public TwitterController() : base()
         {
-            this.restClient = new RestClient();
+            this.twitterEndpoint = new TwitterEndpoint();
         }
 
         public const string OauthVersion = "1.0";
@@ -63,12 +65,12 @@ namespace API.Controllers
             return timestamp;
         }
 
-        private string CreateHeader(string resourceUrl, Method method)
+        private string CreateHeader(string resourceUrl, Method method, string tweet = null, string search = null)
         {
             var oauthNonce = CreateOauthNonce();
             // Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
             var oauthTimestamp = CreateOAuthTimestamp();
-            var oauthSignature = CreateOauthSignature(resourceUrl, method, oauthNonce, oauthTimestamp);
+            var oauthSignature = CreateOauthSignature(resourceUrl, method, oauthNonce, oauthTimestamp, tweet, search);
             StringBuilder requestParameters = new StringBuilder();
             requestParameters.Append($"OAuth oauth_consumer_key={ConsumerApiKey},");
             requestParameters.Append($"oauth_nonce={oauthNonce},");
@@ -84,10 +86,17 @@ namespace API.Controllers
            
         }
 
-        public string CreateOauthSignature(string resourceUrl, Method method, string oauthNonce, string oauthTimestamp) 
+        public string CreateOauthSignature(string resourceUrl, Method method, string oauthNonce, string oauthTimestamp, string tweet = null, string search = null) 
         {
             var baseFormat = "oauth_consumer_key={0}&oauth_nonce={1}&oauth_signature_method={2}" +
                         "&oauth_timestamp={3}&oauth_token={4}&oauth_version={5}";
+
+
+            if (tweet != null)
+            {
+                baseFormat += "&status=" + Uri.EscapeDataString(tweet);
+            }
+
 
             var baseString = string.Format(baseFormat,
                                         ConsumerApiKey,
@@ -120,17 +129,12 @@ namespace API.Controllers
         {
             AccessToken = access_token;
             AccessTokenSecret = accessSecret_token;
-
-            this.twitterEndpoint = new TwitterEndpoint(AccessToken, accessSecret_token);
-
-
-            string MyHeader = CreateHeader(twitterEndpoint.getHomeTweets(), Method.GET);
-
-            
+            string myHeader = CreateHeader(twitterEndpoint.getHomeTweets(), Method.GET);
 
             restClient.endpoint = twitterEndpoint.getHomeTweets();
-            twitterEndpoint.AuthorizationSignature(MyHeader);
-            string response = restClient.makeRequest();
+
+            twitterEndpoint.AuthorizationSignature(myHeader);
+            string response = restClient.makeRequest(HttpVerb.GET, twitterEndpoint.getTwitterEndpoint());
             List<string> twitterHomeTimeline = new List<string>();
 
             using (JSONParser<List<TwitterHomeModel>> jsonParser = new JSONParser<List<TwitterHomeModel>>())
@@ -143,5 +147,102 @@ namespace API.Controllers
             }
             return twitterHomeTimeline;
         }
+
+        [HttpGet]
+        [Route("FavTweets")]
+        public List<string> GetFavTweets(string access_token = "", string accessSecret_token = "")
+        {
+            AccessToken = access_token;
+            AccessTokenSecret = accessSecret_token;
+            string myHeader = CreateHeader(twitterEndpoint.getFavTweets(), Method.GET);
+
+            restClient.endpoint = twitterEndpoint.getFavTweets();
+
+            twitterEndpoint.AuthorizationSignature(myHeader);
+            string response = restClient.makeRequest(HttpVerb.GET, twitterEndpoint.getTwitterEndpoint());
+            List<string> favTweets = new List<string>();
+
+            using (JSONParser<List<FavTweetModel>> jsonParser = new JSONParser<List<FavTweetModel>>())
+            {
+                List<FavTweetModel> deserializedTwitterPostsAPIModel = jsonParser.parseJson(response);
+                for (int i = 0; i < deserializedTwitterPostsAPIModel.Count; i++)
+                {
+                    favTweets.Add(deserializedTwitterPostsAPIModel[i].text);
+                }
+            }
+            return favTweets;
+        }
+
+
+        [HttpGet]
+        [Route("TwitterFriends")]
+        public List<FriendsUsers> GetTwitterFriendList(string access_token = "", string accessSecret_token = "")
+        {
+            List<FriendsUsers> Friends = new List<FriendsUsers>();
+            AccessToken = access_token;
+            AccessTokenSecret = accessSecret_token;
+
+
+            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
+            string MyHeader = CreateHeader(twitterEndpoint.getTwitterFriends(), Method.GET);
+
+            restClient.endpoint = twitterEndpoint.getTwitterFriends();
+            twitterEndpoint.AuthorizationSignature(MyHeader);
+            string response = restClient.makeRequest(HttpVerb.GET, twitterEndpoint.getTwitterEndpoint());
+            JSONParser<TwitterFriendModel> jSONParser = new JSONParser<TwitterFriendModel>();
+            TwitterFriendModel deserializedFacebookLikeAPIModel = new TwitterFriendModel();
+            deserializedFacebookLikeAPIModel = jSONParser.parseJson(response);
+            foreach (FriendsUsers posts in deserializedFacebookLikeAPIModel.users)
+            {
+                Friends.Add(posts);
+            }
+            return Friends;
+        }
+
+
+        [HttpGet]
+        [Route("TwitterFollowers")]
+        public List<Follower> GetTwitterFollowers(string access_token = "", string accessSecret_token = "")
+        {
+            List<Follower> Friends = new List<Follower>();
+            AccessToken = access_token;
+            AccessTokenSecret = accessSecret_token;
+
+
+            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
+            string MyHeader = CreateHeader(twitterEndpoint.getTwitterFollowers(), Method.GET);
+
+            restClient.endpoint = twitterEndpoint.getTwitterFollowers();
+            twitterEndpoint.AuthorizationSignature(MyHeader);
+            string response = restClient.makeRequest(HttpVerb.GET, twitterEndpoint.getTwitterEndpoint());
+            JSONParser<TwitterFollowerModel> jSONParser = new JSONParser<TwitterFollowerModel>();
+            TwitterFollowerModel deserializedFacebookLikeAPIModel = new TwitterFollowerModel();
+            deserializedFacebookLikeAPIModel = jSONParser.parseJson(response);
+            foreach (Follower posts in deserializedFacebookLikeAPIModel.users)
+            {
+                Friends.Add(posts);
+            }
+            return Friends;
+        }
+
+        [HttpPost]
+        [Route("PostTweet")]
+        public IHttpActionResult PostATweet(string access_token = "", string accessSecret_token = "", string tweet = "")
+        {
+            AccessToken = access_token;
+            AccessTokenSecret = accessSecret_token;
+            string search = null;
+
+            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
+            string MyHeader = CreateHeader(twitterEndpoint.makeTweet(), Method.POST, tweet, search);
+
+            restClient.endpoint = twitterEndpoint.makeTweet();
+            twitterEndpoint.AuthorizationSignature(MyHeader);
+            string response = restClient.makeRequest(HttpVerb.POST, twitterEndpoint.getTwitterEndpoint(), tweet);
+
+            return Ok();
+        }
+
+
     }
 }

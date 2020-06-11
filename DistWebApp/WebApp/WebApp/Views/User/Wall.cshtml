@@ -28,6 +28,7 @@
                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Feed</button>
                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Likes</button>
                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample4" aria-expanded="false" aria-controls="multiCollapseExample4">Page Posts</button>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample5" aria-expanded="false" aria-controls="multiCollapseExample5">Pictures</button>
                 </p>
                 <div class="row">
                     <div class="row">
@@ -68,18 +69,39 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="collapse multi-collapse" id="multiCollapseExample5">
+                            <div class="card card-body" id="pictures">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="rightside">
                 <div class="row">
-                    <h3>Twitter</h3>
-                    <input id="getTwitter" onclick="getHomeTweets()" type="button" value="Get Tweets" />
-
-                    <div id="Tweets">
-
+                    <div class="row">
+                        <h3>Twitter</h3>
                     </div>
+                    <div class="row">
+                        <div>
+                            <input type="text" id="tweet">
+                            <input id="getTwitter" onclick="postTweet()" type="button" value="Post Tweets" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input id="getTwitter" onclick="getHomeTweets()" type="button" value="Get Tweets" />
+                        <input id="getTwitter" onclick="getFriends()" type="button" value="Get Frinds" />
+                        <input id="getTwitter" onclick="getFollowers()" type="button" value="Get Followers" />
+                        <input id="getTwitter" onclick="getFavTweets()" type="button" value="Get Favourites" />
+                    </div>                   
+                    <div class="row">
+                        <div id="Tweets">
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

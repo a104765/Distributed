@@ -3,35 +3,49 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 
 namespace API.Client
 {
-    public enum httpVerb
+    public enum HttpVerb
     {
-        GET,
-        POST
+        GET, POST
     }
 
     public class RestClient
     {
         public string endpoint { get; set; }
-        public httpVerb httpMethod { get; set; }
 
         public RestClient()
         {
-            endpoint = string.Empty;
-            httpMethod = httpVerb.GET;
+            this.endpoint = string.Empty;
         }
 
-        //this method is going to send the request and return the json result (if found)
-        public string makeRequest()
+        public string makeRequest(HttpVerb httpMethod, Dictionary<string, string> headers, string tweet = null)
         {
             string strResponseValue = string.Empty;
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(endpoint);
 
             request.Method = httpMethod.ToString();
+
+            //for each header in our list (dictionary) headers
+            foreach (KeyValuePair<string, string> header in headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
+            }
+
+            if (tweet != null)
+            {
+                //request.Method = "GET";
+                request.ContentType = "application/x-www-form-urlencoded";
+                using (Stream objStream = request.GetRequestStream())
+                {
+                    byte[] content = ASCIIEncoding.ASCII.GetBytes("status=" + Uri.EscapeDataString(tweet));
+                    objStream.Write(content, 0, content.Length);
+                }
+            }
 
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             {
@@ -50,9 +64,7 @@ namespace API.Client
                         }
                     }
                 }
-
             }
-
             return strResponseValue;
         }
 

@@ -11,6 +11,7 @@ using System.Web.Http;
 
 namespace API.Controllers
 {
+
     [Authorize]
     [RoutePrefix("api/facebook")]
     public class FacebookController : ApiController
@@ -145,7 +146,7 @@ namespace API.Controllers
 
             facebookEndpoint.accesstoken = token;
             client.endpoint = facebookEndpoint.postComment(id, message);
-            string response = client.makeRequest(HttpVerb.POST, facebookEndpoint.getEndpoint());
+            client.makeRequest(HttpVerb.POST, facebookEndpoint.getEndpoint());
 
             return Ok();
         }

@@ -47,7 +47,12 @@ namespace API.Endpoints
             return stringBuilder.ToString();
         }
 
-
+        public string searchList()
+        {
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append("search/tweets.json");
+            return stringBuilder.ToString();
+        }
 
 
         string a = "";

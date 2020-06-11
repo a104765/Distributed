@@ -262,9 +262,11 @@
     <Compile Include="Models\FavTweetModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ProfilePreference.cs" />
+    <Compile Include="Models\SearchHistory.cs" />
     <Compile Include="Models\TwitterFollowerModel.cs" />
     <Compile Include="Models\TwitterFriendModel.cs" />
     <Compile Include="Models\TwitterHomeModel.cs" />
+    <Compile Include="Models\TwitterSearchModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />

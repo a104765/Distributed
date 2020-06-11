@@ -96,6 +96,10 @@ namespace API.Controllers
             {
                 baseFormat += "&status=" + Uri.EscapeDataString(tweet);
             }
+            if (search != null)
+            {
+                baseFormat += "&q=" + search;
+            }
 
 
             var baseString = string.Format(baseFormat,
@@ -183,7 +187,6 @@ namespace API.Controllers
             AccessTokenSecret = accessSecret_token;
 
 
-            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
             string MyHeader = CreateHeader(twitterEndpoint.getTwitterFriends(), Method.GET);
 
             restClient.endpoint = twitterEndpoint.getTwitterFriends();
@@ -209,7 +212,6 @@ namespace API.Controllers
             AccessTokenSecret = accessSecret_token;
 
 
-            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
             string MyHeader = CreateHeader(twitterEndpoint.getTwitterFollowers(), Method.GET);
 
             restClient.endpoint = twitterEndpoint.getTwitterFollowers();
@@ -233,16 +235,60 @@ namespace API.Controllers
             AccessTokenSecret = accessSecret_token;
             string search = null;
 
-            //var AuthSignature = CreateOauthSignature(twitterEndpoint.getHomeTweets(), Method.GET, nounce, timeStamp);
             string MyHeader = CreateHeader(twitterEndpoint.makeTweet(), Method.POST, tweet, search);
 
             restClient.endpoint = twitterEndpoint.makeTweet();
             twitterEndpoint.AuthorizationSignature(MyHeader);
-            string response = restClient.makeRequest(HttpVerb.POST, twitterEndpoint.getTwitterEndpoint(), tweet);
+            restClient.makeRequest(HttpVerb.POST, twitterEndpoint.getTwitterEndpoint(), tweet);
 
             return Ok();
         }
 
+        public void addSearch(SearchHistory searchHistory, string username)
+        {
+            ApplicationDbContext db = new ApplicationDbContext();
+            var user = db.Users.FirstOrDefault(x => x.UserName == username);
+            searchHistory.Owner = user;
+            db.SearchHistory.Add(searchHistory);
+            db.SaveChanges();
+        }
 
+        [HttpGet]
+        [Route("Search")]
+        public List<TwitterSearchModel.Search> Search(string username, string access_token, string accessSecret_token, string query)
+        {
+            List<TwitterSearchModel.Search> statuses = new List<TwitterSearchModel.Search>();
+            AccessToken = access_token;
+            AccessTokenSecret = accessSecret_token;
+            string tweet = null;
+            string myHeader = CreateHeader(twitterEndpoint.searchList(), Method.GET, tweet, query);
+
+            restClient.endpoint = twitterEndpoint.searchList();
+            twitterEndpoint.AuthorizationSignature(myHeader);
+
+            ServicePointManager.Expect100Continue = false;
+
+            restClient.endpoint += "?q=" + query;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(restClient.endpoint);
+
+
+            restClient.makeRequest(HttpVerb.GET, twitterEndpoint.getTwitterEndpoint());
+
+            request.Headers.Add("Authorization", myHeader);
+            request.Method = "GET";
+            request.ContentType = "application/x-www-form-urlencoded";
+            WebResponse response = request.GetResponse();
+
+            string data = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            JSONParser<TwitterSearchModel> jSONParser = new JSONParser<TwitterSearchModel>();
+            TwitterSearchModel deserializedModel = new TwitterSearchModel();
+            deserializedModel = jSONParser.parseJson(data);
+            foreach (TwitterSearchModel.Search res in deserializedModel.statuses)
+            {
+                statuses.Add(res);
+            }
+            return statuses;
+
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace API.Client
         GET, POST
     }
 
+
     public class RestClient
     {
         public string endpoint { get; set; }

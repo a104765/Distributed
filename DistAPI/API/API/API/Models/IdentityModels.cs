@@ -32,5 +32,6 @@ namespace API.Models
         }
 
         public DbSet<ProfilePreference> ProfilePrefereces { get; set; }
+        public DbSet<SearchHistory> SearchHistory { get; set; }
     }
 }

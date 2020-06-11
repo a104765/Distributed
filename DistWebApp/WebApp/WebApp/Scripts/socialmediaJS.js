@@ -39,8 +39,6 @@ function logOut() {
 }
 
 $(document).on("click", ".postbtn", function () {
-
-
     $.ajax({
         url: 'https://localhost:44377/api/facebook/getToken?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
@@ -104,7 +102,11 @@ $(document).ready(function () {
                 $('#divError').show('fade');
             }
         });
+
     });
+
+    
+
 
     $(document).ready(function () {
 
@@ -214,7 +216,6 @@ $(document).ready(function () {
             },
             success: function (response) {
 
-                console.log(response.Email);
 
                 if (response.Email == true) {
                     $("#prefEmail").prop("checked", true);
@@ -267,8 +268,7 @@ $(document).ready(function () {
             success: function (data) {
                 for (x in data) {
 
-                    console.log(data[x].name);
-                    console.log(data[x].picture);
+                    
                     $("#pictures").append('<div class="card" style="width: 18rem;">');
                     $("#pictures").append('<img src="'+ data[x].picture +'" class="card-img-top" alt="...">');
                     $("#pictures").append('<div class="card-body">');
@@ -552,11 +552,48 @@ function postTweet() {
             alert("Nigga it works!");
         },
         error: function (jqXHR) {
-            $('#divErrorText').text(jqXHR.responseText);
-            $('#divError').show('fade');
             alert("Nigga we got a problem");
         }
     });
 }
+
+
+
+
+function Search() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/Search?username=' + sessionStorage.getItem('username'),
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret"),
+            query: document.getElementById('search').value
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            //let output = '<h3>Search List</h3>';
+            //for (let i in response) {
+            //    console.log(response[i].text);
+            //    if (response[i].text) {
+            //        output +=
+            //            `<ul class="list-group">
+            //                <li class="list-group-item">${response[i].created_at}<br>${response[i].text}</li>
+            //                </ul>
+            //                ;`
+            //        }
+            //    }
+            //    document.getElementById('TwitterProfile').innerHTML = output;
+            },
+            error: function (jqXHR) {
+                                $('#divErrorText').text(jqXHR.responseText);
+                $('#divError').show('fade');
+            }
+        });
+    }
 
 

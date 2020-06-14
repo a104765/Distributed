@@ -32,19 +32,14 @@
                     </li>
                     <li class="nav-item active">
                         <div class="nav-link">
-                            @Html.ActionLink("Login", "Login", "User")
-                        </div>
-                    </li>
-                    <li class="nav-item active">
-                        <div class="nav-link">
-                            @Html.ActionLink("Register", "Register", "User")
+                            <a href="@Url.Action("Logout", "User")" role="button" id="logoutBtn">Logout</a>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container-fluid">
         @RenderBody()
         <hr />
         <footer>

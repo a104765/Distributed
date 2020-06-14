@@ -13,23 +13,21 @@ namespace WebApp.Controllers
     public class UserController : Controller
     {
         // GET: User
-        public ActionResult Index()
-        {
-            return View();
-        }
+        
 
         public ActionResult Login()
         {
-            ViewBag.Message = "Login";
-
             return View();
         }
 
         public ActionResult Register()
         {
-            ViewBag.Message = "Register";
-
             return View();
+        }
+
+        public ActionResult Logout()
+        {
+            return RedirectToAction("Index","Home");
         }
 
         public ActionResult Wall()

@@ -1,4 +1,6 @@
-﻿window.fbAsyncInit = function () {
+﻿//Facebook Connection config
+
+window.fbAsyncInit = function () {
     FB.init({
         appId: '631932424335085',
         cookie: true,
@@ -38,7 +40,204 @@ function logOut() {
     });
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+//Facebook API calls
+
+function getProfile() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getProfile?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+        },
+        data: sessionStorage.getItem("fbToken"),
+        success: function (response) {
+            console.log(response);
+            let output = '<h3>Profile</h3>';
+            output += `
+                            <input id="prefSet" type="button" value="Set preferences" />
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="prefEmail">
+                                <label class="form-check-label" for="prefEmail">Email</label>
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="prefBirthday">
+                                <label class="form-check-label" for="prefBirthday">Birthday</label>
+                            </div>
+
+                            <div class="card card-body">
+                                <h5 class="card-title" id="profileName">${response.name}</h5>
+                                <p class="card-text" id="profileEmail">${response.email}</p>
+                                <p class="card-text" id="profileBirthday">${response.birthday}</p>
+                            </div>`
+                ;
+            document.getElementById('ProfileSpace').innerHTML = output;
+            getUserPref();
+        },
+        error: function (e) {
+            console.log("error " + e);
+        }
+    });
+}
+
+function getUserPref() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getPref?',
+        method: 'GET',
+        contentType: 'application/json',
+        data: {
+            username: sessionStorage.getItem("username")
+        },
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+
+
+            if (response.Email == true) {
+                $("#prefEmail").prop("checked", true);
+            }
+            else {
+                $("#prefEmail").prop("checked", false);
+                $("#profileEmail").hide();
+            }
+
+            if (response.Birthday == true) {
+                $("#prefBirthday").prop("checked", true);
+            }
+            else {
+                $("#prefBirthday").prop("checked", false);
+                $("#profileBirthday").hide();
+            }
+
+
+        },
+        error: function (e) {
+            alert(e);
+        }
+    });
+}
+
+function getUserLikes() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getUserLikes?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+        },
+        data: sessionStorage.getItem("fbToken"),
+        success: function (response) {
+
+            let output = '<h3>Likes</h3>';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i].name}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('LikesSpace').innerHTML = output;
+        }
+    })
+}
+
+function getPictures() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getPictures?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+        },
+        data: sessionStorage.getItem("fbToken"),
+        success: function (data) {
+            let output = '<h3>Photos</h3>';
+            for (x in data) {
+                if (data[x]) {
+                    output += `<div class="card" style="width: 18rem;">
+                                <img src="${data[x].picture}" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                <p class="card-text">${data[x].name}</p >
+                                </div>
+                                </div>
+                                        `;
+                }
+            }
+            document.getElementById('PhotosSpace').innerHTML = output;
+        }
+    })
+}
+
+function getFeed() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getFeed?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        data: sessionStorage.getItem("fbToken"),
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+        },
+        dataType: 'json',
+        success: function (data) {
+            let output = '<h3>Feed</h3>';
+            for (x in data) {
+                if (data[x]) {
+                    output += `<ul class="list-group">
+                                <li class="list-group-item">${data[x].message}</li>
+                            </ul>
+                                        `;
+                }
+            }
+            document.getElementById('FeedSpace').innerHTML = output;
+        },
+        error: function (e) {
+            console.log("error " + e);
+        }
+    });
+}
+
+
+function getPagePosts() {
+    $.ajax({
+        url: 'https://localhost:44377/api/facebook/getPagePosts?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
+        data: sessionStorage.getItem("fbToken"),
+        headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
+        },
+        dataType: 'json',
+        success: function (data) {
+            var postsObject = JSON.parse(data);
+            let output = '<h3>Page Feed</h3>';
+            for (x in postsObject.data) {
+                if (postsObject.data[x].message != null) {
+
+                    output += `
+                                <div class="card bg-light">
+                                <div class="card-body">
+                                <h5 class="card-title"> ${postsObject.data[x].message} </h5>
+                                <input type="text">
+                                <button class="postbtn" id="${postsObject.data[x].id}"> Comment </button>
+                                </div>
+                                </div>
+                                `;
+                }
+            }
+            document.getElementById('PageFeedSpace').innerHTML = output;
+        },
+        error: function (e) {
+            console.log("error " + e);
+        }
+    });
+}
+
 $(document).on("click", ".postbtn", function () {
+
+    var id = $(this).attr("id");
+    var msg = $(this).siblings("input").val();
+
     $.ajax({
         url: 'https://localhost:44377/api/facebook/getToken?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
@@ -49,6 +248,22 @@ $(document).on("click", ".postbtn", function () {
         success: function (response) {
 
             sessionStorage.setItem("token", response["data"][0].access_token);
+
+            $.ajax({
+                url: 'https://localhost:44377/api/facebook/PostComment?id=' + id + '&message=' + msg + '&token=' + sessionStorage.getItem("token"),
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+                },
+                contentType: 'application/json',
+                success: function (response) {
+                    alert("Comment Posted");
+                },
+                error: function (jqXHR) {
+                    $('#divErrorText').text(jqXHR.responseText);
+                    $('#divError').show('fade');
+                }
+            });
         },
         error: function (e) {
             alert(e);
@@ -57,24 +272,12 @@ $(document).on("click", ".postbtn", function () {
 
     console.log($(this).attr("id"));
 
-    $.ajax({
-        url: 'https://localhost:44377/api/facebook/PostComment?id=' + $(this).attr("id") + '&message=' + $(this).siblings("input").val() + '&token=' + sessionStorage.getItem("token"),
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
-        },
-        contentType: 'application/json',
-        success: function (response) {
-            alert("Comment Posted");
-        },
-        error: function (jqXHR) {
-            $('#divErrorText').text(jqXHR.responseText);
-            $('#divError').show('fade');
-        }
-    });
+    
 });
 
 $(document).ready(function () {
+
+    
 
     $('#linkClose').click(function () {
         $('#divError').hide('fade');
@@ -185,154 +388,21 @@ $(document).ready(function () {
     });
 
 
-    $(document).on("click", "#btnnn", function () {
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getProfile?accesstoken=' + sessionStorage.getItem("fbToken"),
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
-            },
-            data: sessionStorage.getItem("fbToken"),
-            success: function (data) {
-
-                $("#profileName").append(data.name);
-                $("#profileEmail").append(data.email);
-                $("#profileBirthday").append(data.birthday);
-            },
-            error: function (e) {
-                console.log("error " + e);
-            }
-        });
-
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getPref?',
-            method: 'GET',
-            contentType: 'application/json',
-            data: {
-                username: sessionStorage.getItem("username")
-            },
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
-            },
-            success: function (response) {
-
-
-                if (response.Email == true) {
-                    $("#prefEmail").prop("checked", true);
-                }
-                else {
-                    $("#profileEmail").hide();
-                }
-
-                if (response.Birthday == true) {
-                    $("#prefBirthday").prop("checked", true);
-                }
-                else {
-                    $("#profileBirthday").hide();
-                }
-
-
-            },
-            error: function (e) {
-                alert(e);
-            }
-        });
-
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getUserLikes?accesstoken=' + sessionStorage.getItem("fbToken"),
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
-            },
-            data: sessionStorage.getItem("fbToken"),
-            success: function (data) {
-                $.each(data, function (index, likes) {
-
-                    $("#feed").append('<div class="card bg-light">');
-                    $("#likes").append('<div class="card-body">');
-                    $("#likes").append('<h5 class="card-title">' + likes.name + '</h5>');
-                    $("#likes").append('</div>');
-                    $("#likes").append('</div>');
-                })
-            }
-        })
-
-
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getPictures?accesstoken=' + sessionStorage.getItem("fbToken"),
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
-            },
-            data: sessionStorage.getItem("fbToken"),
-            success: function (data) {
-                for (x in data) {
-
-                    
-                    $("#pictures").append('<div class="card" style="width: 18rem;">');
-                    $("#pictures").append('<img src="'+ data[x].picture +'" class="card-img-top" alt="...">');
-                    $("#pictures").append('<div class="card-body">');
-                    $("#pictures").append('<p class="card-text">' + data[x].name + '</p >');
-                    $("#pictures").append('</div>');
-                    $("#pictures").append('</div>');
-                }
-            }
-        })
-
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getFeed?accesstoken=' + sessionStorage.getItem("fbToken"),
-            method: 'GET',
-            data: sessionStorage.getItem("fbToken"),
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
-            },
-            dataType: 'json',
-            success: function (data) {
-
-                $.each(data, function (index, feed) {
-
-                    $("#feed").append('<div class="card bg-light">');
-                    $("#feed").append('<div class="card-body">');
-                    $("#feed").append('<h5 class="card-title">' + feed.message + '</h5>');
-                    $("#feed").append('</div>');
-                    $("#feed").append('</div>');
-                })
-            },
-            error: function (e) {
-                console.log("error " + e);
-            }
-        });
-
-        $.ajax({
-            url: 'https://localhost:44377/api/facebook/getPagePosts?accesstoken=' + sessionStorage.getItem("fbToken"),
-            method: 'GET',
-            data: sessionStorage.getItem("fbToken"),
-            headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
-            },
-            dataType: 'json',
-            success: function (data) {
-                var postsObject = JSON.parse(data);
-
-                for (x in postsObject.data) {
-                    if (postsObject.data[x].message != null) {
-                            $("#page").append('<div class="card bg-light">');
-                            $("#page").append('<div class="card-body">');
-                            $("#page").append('<h5 class="card-title">' + postsObject.data[x].message + '</h5>');
-                            $("#page").append('<input type="text">');
-                            $("#page").append('<button class="postbtn" id="' + postsObject.data[x].id+'"> Post </button>"');
-                            $("#page").append('</div>');
-                            $("#page").append('</div>');
-                        }
-                }
-            },
-            error: function (e) {
-                console.log("error " + e);
-            }
-        });
-
-        
+    $(document).on("click", "#logoutBtn", function () {
+        sessionStorage.clear();
     });
+
+    if (sessionStorage.getItem("accessToken") == null) {
+        $("#logoutBtn").hide();
+    }
+    else {
+        $("#logoutBtn").show();
+    }
+
+
+
+
+
 });
 
 
@@ -412,7 +482,6 @@ function getHomeTweets() {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
         },
         success: function (response) {
-            console.log(response);
             let output = '<h3>Home Tweets</h3>';
             for (let i in response) {
                 if (response[i]) {
@@ -423,7 +492,7 @@ function getHomeTweets() {
                         ;
                 }
             }
-            document.getElementById('Tweets').innerHTML = output;
+            document.getElementById('HomeTweetsSpace').innerHTML = output;
         },
         error: function (jqXHR) {
             $('#divErrorText').text(jqXHR.responseText);
@@ -432,7 +501,23 @@ function getHomeTweets() {
     });
 }
 
-
+function getSearchHistory() {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/SearchHistory?username=' + sessionStorage.getItem("username"),
+        method: 'POST',
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}
 
 
 function getFavTweets() {
@@ -449,8 +534,7 @@ function getFavTweets() {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
         },
         success: function (response) {
-            console.log(response);
-            let output = '<h3>Fav Tweets</h3>';
+            let output = '<h3>Favourite Tweets</h3>';
             for (let i in response) {
                 if (response[i]) {
                     output += `
@@ -460,7 +544,7 @@ function getFavTweets() {
                         ;
                 }
             }
-            document.getElementById('Tweets').innerHTML = output;
+            document.getElementById('FavTweetsSpace').innerHTML = output;
         },
         error: function (jqXHR) {
             $('#divErrorText').text(jqXHR.responseText);
@@ -483,7 +567,6 @@ function getFriends() {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
         },
         success: function (response) {
-            console.log(response);
             let output = '<h3>Friends</h3>';
             for (let i in response) {
                 if (response[i]) {
@@ -494,7 +577,7 @@ function getFriends() {
                         ;
                 }
             }
-            document.getElementById('Tweets').innerHTML = output;
+            document.getElementById('GetFriendsSpace').innerHTML = output;
         },
         error: function (jqXHR) {
             $('#divErrorText').text(jqXHR.responseText);
@@ -517,7 +600,6 @@ function getFollowers() {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
         },
         success: function (response) {
-            console.log(response);
             let output = '<h3>Followers</h3>';
             for (let i in response) {
                 if (response[i]) {
@@ -528,7 +610,7 @@ function getFollowers() {
                         ;
                 }
             }
-            document.getElementById('Tweets').innerHTML = output;
+            document.getElementById('FollowersSpace').innerHTML = output;
         },
         error: function (jqXHR) {
             $('#divErrorText').text(jqXHR.responseText);
@@ -549,26 +631,24 @@ function postTweet() {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
         },
         success: function (response) {
-            alert("Nigga it works!");
+            alert("Tweet posted!");
         },
         error: function (jqXHR) {
-            alert("Nigga we got a problem");
+            alert("A problem occured");
         }
     });
 }
 
 
+function getSearchHistory() {
 
-
-function Search() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/Search?username=' + sessionStorage.getItem('username'),
+        url: 'https://localhost:44377/api/twitter/SearchHistory?username=' + sessionStorage.getItem('username'),
         method: 'GET',
         data:
         {
             access_token: sessionStorage.getItem("TwitterToken"),
             accessSecret_token: sessionStorage.getItem("TwitterSecret"),
-            query: document.getElementById('search').value
         },
         headers:
         {
@@ -576,18 +656,53 @@ function Search() {
         },
         success: function (response) {
             console.log(response);
-            //let output = '<h3>Search List</h3>';
-            //for (let i in response) {
-            //    console.log(response[i].text);
-            //    if (response[i].text) {
-            //        output +=
-            //            `<ul class="list-group">
-            //                <li class="list-group-item">${response[i].created_at}<br>${response[i].text}</li>
-            //                </ul>
-            //                ;`
-            //        }
-            //    }
-            //    document.getElementById('TwitterProfile').innerHTML = output;
+            document.getElementById('dropdown').innerHTML = `<select class="custom-select" id="historyDropDown"></select>`;
+            for (let i in response) {
+                if (response[i]) {
+                    $('#historyDropDown').append($('<option>', {
+                        value: response[i].searchQuery,
+                        text: response[i].searchQuery
+                    }));
+                }
+            }
+        },
+        error: function (jqXHR) {
+            $('#divErrorText').text(jqXHR.responseText);
+            $('#divError').show('fade');
+        }
+    });
+}
+
+
+
+function Search(query) {
+    $.ajax({
+        url: 'https://localhost:44377/api/twitter/Search?username=' + sessionStorage.getItem('username'),
+        method: 'GET',
+        data:
+        {
+            access_token: sessionStorage.getItem("TwitterToken"),
+            accessSecret_token: sessionStorage.getItem("TwitterSecret"),
+            query: query
+        },
+        headers:
+        {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+        },
+        success: function (response) {
+            console.log(response);
+            let output = '';
+            for (let i in response) {
+                if (response[i]) {
+                    output += `
+                            <ul class="list-group">
+                                <li class="list-group-item">${response[i].text}</li>
+                            </ul>`
+                        ;
+                }
+            }
+            document.getElementById('SearchSpace').innerHTML = output;
+            
             },
             error: function (jqXHR) {
                                 $('#divErrorText').text(jqXHR.responseText);
@@ -596,4 +711,48 @@ function Search() {
         });
     }
 
+
+
+
+function FBopenTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("FBtabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("FBtablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+function TWopenTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("TWtabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("TWtablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
 

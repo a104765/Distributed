@@ -287,8 +287,26 @@ namespace API.Controllers
             {
                 statuses.Add(res);
             }
+
+
+            SearchHistory sh = new SearchHistory();
+            sh.searchQuery = query;
+            sh.Username = username;
+            addSearch(sh,username);
+
+
             return statuses;
 
+        }
+
+        [HttpGet]
+        [Route("SearchHistory")]
+        public IEnumerable<SearchHistory> GetSearchHistory(string username)
+        {
+            ApplicationDbContext db = new ApplicationDbContext();
+            IEnumerable<SearchHistory> sh = db.SearchHistory.Where(x => x.Username == username);
+
+            return sh.ToList();
         }
     }
 }

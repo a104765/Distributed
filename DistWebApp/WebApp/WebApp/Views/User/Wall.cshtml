@@ -2,117 +2,144 @@
     ViewBag.Title = "Wall";
 }
 
-    <fb:login-button scope="public_profile,email"
-                     onlogin="checkLoginState();">
-    </fb:login-button>
-
-    <a id="twitter-button" onclick="signin()" class="btn btn-block btn-social btn-twitter">
-        <i class="fa fa-twitter"></i> Twitter Sign in
-    </a>
+    
 
     
 
-<div class="container-fluid">
-    <div class="row">
-        <h3 style="text-align:center">Social media aggregator</h3>
+    
+
+    <div class="container">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 style="text-align:center" class="display-4">Social Media Aggregator</h1>
+            </div>
+        </div>
+
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="leftside">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
                 <div class="row">
-                    <h3>Facebook</h3>
-                    <input id="btnnn" type="button" value="Get posts" />
+                    <div class="col">
+                        <h1 style="text-align:center" class="display-4">Facebook</h1>
+                    </div>
+                    <div class="col">
+                        <fb:login-button scope="public_profile,email"
+                                         onlogin="checkLoginState();">
+                        </fb:login-button>
+                    </div>
                 </div>
-                <p>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Profile</button>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Feed</button>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Likes</button>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample4" aria-expanded="false" aria-controls="multiCollapseExample4">Page Posts</button>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample5" aria-expanded="false" aria-controls="multiCollapseExample5">Pictures</button>
-                </p>
-                <div class="row">
-                    <div class="row">
-                        <div class="collapse multi-collapse" id="multiCollapseExample1">
+                <div class="leftside">
+                    <hr />
+                    <div class="tab">
+                        <button class="FBtablinks" type="button" onclick="getProfile(),FBopenTab(event, 'Profile')" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Profile</button>
+                        <button class="FBtablinks" type="button" onclick="getFeed(), FBopenTab(event, 'Feed')" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Feed</button>
+                        <button class="FBtablinks" type="button" onclick="getUserLikes(), FBopenTab(event, 'Likes')" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Likes</button>
+                        <button class="FBtablinks" type="button" onclick="getPictures(), FBopenTab(event, 'Photos')" data-toggle="collapse" data-target="#multiCollapseExample4" aria-expanded="false" aria-controls="multiCollapseExample4">Pictures</button>
+                        <button class="FBtablinks" type="button" onclick="getPagePosts(), FBopenTab(event, 'Page Feed')" data-toggle="collapse" data-target="#multiCollapseExample5" aria-expanded="false" aria-controls="multiCollapseExample5">Page Posts</button>
+                    </div>
 
-                            <input id="prefSet" type="button" value="Set preferences" />
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="prefEmail">
-                                <label class="form-check-label" for="prefEmail">Email</label>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="prefBirthday">
-                                <label class="form-check-label" for="prefBirthday">Birthday</label>
-                            </div>
+                    <!-- Tab content -->
+                    <div id="Profile" class="FBtabcontent">
+                        <div id="ProfileSpace">
+                            
+                        </div>
+                    </div>
 
-                            <div class="card card-body">
-                                <h5 class="card-title" id="profileName"></h5>
-                                <p class="card-text" id="profileEmail"></p>
-                                <p class="card-text" id="profileBirthday"></p>
-                            </div>
+                    <div id="Feed" class="FBtabcontent">
+                        <div id="FeedSpace">
+
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="collapse multi-collapse" id="multiCollapseExample2">
-                            <div class="card card-body" id="feed">
-                            </div>
-                        </div>
+
+                    <div id="Likes" class="FBtabcontent">
+                        <div id="LikesSpace"></div>
                     </div>
-                    <div class="row">
-                        <div class="collapse multi-collapse" id="multiCollapseExample3">
-                            <div class="card card-body" id="likes">
-                            </div>
-                        </div>
+                    <div id="Photos" class="FBtabcontent">
+                        <div id="PhotosSpace"></div>
                     </div>
-                    <div class="row">
-                        <div class="collapse multi-collapse" id="multiCollapseExample4">
-                            <div class="card card-body" id="page">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="collapse multi-collapse" id="multiCollapseExample5">
-                            <div class="card card-body" id="pictures">
-                            </div>
-                        </div>
+                    <div id="Page Feed" class="FBtabcontent">
+                        <div id="PageFeedSpace"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col">
-            <div class="rightside">
+            <div class="col">
                 <div class="row">
-                    <div class="row">
-                        <h3>Twitter</h3>
+                    <div class="col">
+                        <h1 class="display-4">Twitter</h1>
                     </div>
-                    <div class="row">
-                        <div>
-                            <input type="text" id="tweet">
-                            <input id="getTwitter" onclick="postTweet()" type="button" value="Post Tweets" />
+                    <div class="col">
+                        <a id="twitter-button" onclick="signin()" class="btn btn-block btn-social btn-twitter">
+                            <i class="fa fa-twitter"></i> Twitter Sign in
+                        </a>
+                    </div>
+                </div>
+                <div class="rightside">
+                    <hr />
+                    <div class="tab">
+                        <button class="TWtablinks" type="button" onclick="getHomeTweets(), TWopenTab(event, 'HomeTweets')" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Home Tweets</button>
+                        <button class="TWtablinks" type="button" onclick="getFriends(), TWopenTab(event, 'GetFriends')" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Get Friends</button>
+                        <button class="TWtablinks" type="button" onclick="getFollowers(), TWopenTab(event, 'Followers')" data-toggle="collapse" data-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Followers</button>
+                        <button class="TWtablinks" type="button" onclick="getFavTweets(), TWopenTab(event, 'FavTweets')" data-toggle="collapse" data-target="#multiCollapseExample4" aria-expanded="false" aria-controls="multiCollapseExample4">Favourite Tweets</button>
+                        <button class="TWtablinks" type="button" onclick="TWopenTab(event, 'PostTweet')" data-toggle="collapse" data-target="#multiCollapseExample5" aria-expanded="false" aria-controls="multiCollapseExample5">Post Tweet</button>
+                        <button class="TWtablinks" type="button" onclick="getSearchHistory(), TWopenTab(event, 'Search')" data-toggle="collapse" data-target="#multiCollapseExample6" aria-expanded="false" aria-controls="multiCollapseExample6">Search</button>
+                    </div>
+
+                    <div id="HomeTweets" class="TWtabcontent">
+                        <div id="HomeTweetsSpace">
+
                         </div>
+                    </div>
+                    <div id="GetFriends" class="TWtabcontent">
+                        <div id="GetFriendsSpace">
+
+                        </div>
+                    </div>
+                    <div id="Followers" class="TWtabcontent">
+                        <div id="FollowersSpace">
+
+                        </div>
+                    </div>
+                    <div id="FavTweets" class="TWtabcontent">
+                        <div id="FavTweetsSpace">
+
+                        </div>
+                    </div>
+                    <div id="PostTweet" class="TWtabcontent">
+                        <h3>Post a Tweet</h3>
+                        <div id="PostTweetSpace">
+                            <div>
+                                <input type="text" id="tweet">
+                                <input id="getTwitter" onclick="postTweet()" type="button" value="Post Tweets" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Search" class="TWtabcontent">
+                        <h3>Search</h3>
                         <div>
                             <input type="text" id="search">
-                            <input id="getTwitter" onclick="Search()" type="button" value="Search" />
+                            <input id="getTwitter" onclick="Search(document.getElementById('search').value)" type="button" value="Search" />
                         </div>
-                    </div>
-                    <div class="row">
-                        <input id="getTwitter" onclick="getHomeTweets()" type="button" value="Get Tweets" />
-                        <input id="getTwitter" onclick="getFriends()" type="button" value="Get Frinds" />
-                        <input id="getTwitter" onclick="getFollowers()" type="button" value="Get Followers" />
-                        <input id="getTwitter" onclick="getFavTweets()" type="button" value="Get Favourites" />
-                    </div>                   
-                    <div class="row">
-                        <div id="Tweets">
+                        <div>
+                            <p>Search History</p>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="inputGroupSelect01">Search History</label>
+                                </div>
+                                <div id="dropdown">
+
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" onclick="Search(document.getElementById('historyDropDown').value)" type="button">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="SearchSpace">
 
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-
-
-

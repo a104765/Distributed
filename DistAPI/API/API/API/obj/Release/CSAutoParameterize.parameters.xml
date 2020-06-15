@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="distdb-Web.config Connection String" description="distdb Connection String used in web.config by the application to access the database." defaultValue="Data Source=SQL5041.site4now.net;Initial Catalog=DB_A6312E_dist;User Id=DB_A6312E_dist_admin;Password=ITt44it4;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\Isaac\\Desktop\\Dist\\DistAPI\\API\\API\\API\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='distdb']/@connectionString" />
+  </parameter>
+</parameters>

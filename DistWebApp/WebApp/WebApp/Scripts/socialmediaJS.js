@@ -47,7 +47,7 @@ function logOut() {
 
 function getProfile() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getProfile?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getProfile?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
@@ -59,11 +59,11 @@ function getProfile() {
             output += `
                             <input id="prefSet" type="button" value="Set preferences" />
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="prefEmail">
+                                <input type="checkbox" class="form-check-input" id="prefEmail" checked>
                                 <label class="form-check-label" for="prefEmail">Email</label>
                             </div>
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="prefBirthday">
+                                <input type="checkbox" class="form-check-input" id="prefBirthday" checked>
                                 <label class="form-check-label" for="prefBirthday">Birthday</label>
                             </div>
 
@@ -84,7 +84,7 @@ function getProfile() {
 
 function getUserPref() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getPref?',
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getPref?',
         method: 'GET',
         contentType: 'application/json',
         data: {
@@ -122,7 +122,7 @@ function getUserPref() {
 
 function getUserLikes() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getUserLikes?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getUserLikes?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
@@ -147,7 +147,7 @@ function getUserLikes() {
 
 function getPictures() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getPictures?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getPictures?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
@@ -173,7 +173,7 @@ function getPictures() {
 
 function getFeed() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getFeed?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getFeed?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
         data: sessionStorage.getItem("fbToken"),
         headers: {
@@ -201,7 +201,8 @@ function getFeed() {
 
 function getPagePosts() {
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getPagePosts?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getPagePosts?accesstoken=' + sessionStorage.getItem("fbToken"),
+        method: 'GET',
         method: 'GET',
         data: sessionStorage.getItem("fbToken"),
         headers: {
@@ -239,7 +240,7 @@ $(document).on("click", ".postbtn", function () {
     var msg = $(this).siblings("input").val();
 
     $.ajax({
-        url: 'https://localhost:44377/api/facebook/getToken?accesstoken=' + sessionStorage.getItem("fbToken"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/facebook/getToken?accesstoken=' + sessionStorage.getItem("fbToken"),
         method: 'GET',
         contentType: 'application/json',
         headers: {
@@ -250,7 +251,7 @@ $(document).on("click", ".postbtn", function () {
             sessionStorage.setItem("token", response["data"][0].access_token);
 
             $.ajax({
-                url: 'https://localhost:44377/api/facebook/PostComment?id=' + id + '&message=' + msg + '&token=' + sessionStorage.getItem("token"),
+                url: 'http://a104765-001-site1.ctempurl.com/api/facebook/PostComment?id=' + id + '&message=' + msg + '&token=' + sessionStorage.getItem("token"),
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
@@ -285,7 +286,7 @@ $(document).ready(function () {
 
     $('#btnLogin').click(function () {
         $.ajax({
-            url: 'https://localhost:44377/token',
+            url: 'http://a104765-001-site1.ctempurl.com/token',
             method: 'POST',
             contentType: 'application/json',
             data: {
@@ -319,7 +320,7 @@ $(document).ready(function () {
 
         $('#btnRegister').click(function () {
             $.ajax({
-                url: 'https://localhost:44377/api/Account/Register',
+                url: 'http://a104765-001-site1.ctempurl.com/api/Account/Register',
                 method: 'POST',
                 data: {
                     email: $('#txtEmail').val(),
@@ -366,7 +367,7 @@ $(document).ready(function () {
 
 
         $.ajax({
-            url: 'https://localhost:44377/api/facebook/setPref?',
+            url: 'http://a104765-001-site1.ctempurl.com/api/facebook/setPref?',
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken'),
@@ -470,7 +471,7 @@ function signin() {
 
 function getHomeTweets() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/HomeTweets',
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/HomeTweets',
         method: 'GET',
         data:
         {
@@ -503,7 +504,7 @@ function getHomeTweets() {
 
 function getSearchHistory() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/SearchHistory?username=' + sessionStorage.getItem("username"),
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/SearchHistory?username=' + sessionStorage.getItem("username"),
         method: 'POST',
         headers:
         {
@@ -522,7 +523,7 @@ function getSearchHistory() {
 
 function getFavTweets() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/FavTweets',
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/FavTweets',
         method: 'GET',
         data:
         {
@@ -555,7 +556,7 @@ function getFavTweets() {
 
 function getFriends() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/TwitterFriends',
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/TwitterFriends',
         method: 'GET',
         data:
         {
@@ -588,7 +589,7 @@ function getFriends() {
 
 function getFollowers() {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/TwitterFollowers',
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/TwitterFollowers',
         method: 'GET',
         data:
         {
@@ -624,7 +625,7 @@ function postTweet() {
     var accessSecretToken = sessionStorage.getItem("TwitterSecret");
     var tweet = document.getElementById('tweet').value;
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/PostTweet?access_token=' + accessToken + '&accessSecret_token=' + accessSecretToken + '&tweet=' + tweet,
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/PostTweet?access_token=' + accessToken + '&accessSecret_token=' + accessSecretToken + '&tweet=' + tweet,
         method: 'POST',
         headers:
         {
@@ -643,7 +644,7 @@ function postTweet() {
 function getSearchHistory() {
 
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/SearchHistory?username=' + sessionStorage.getItem('username'),
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/SearchHistory?username=' + sessionStorage.getItem('username'),
         method: 'GET',
         data:
         {
@@ -677,7 +678,7 @@ function getSearchHistory() {
 
 function Search(query) {
     $.ajax({
-        url: 'https://localhost:44377/api/twitter/Search?username=' + sessionStorage.getItem('username'),
+        url: 'http://a104765-001-site1.ctempurl.com/api/twitter/Search?username=' + sessionStorage.getItem('username'),
         method: 'GET',
         data:
         {
